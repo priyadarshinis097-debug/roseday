@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Rose Day 🌹</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins', sans-serif;}
+    body{
+      height:100vh;
+      overflow:hidden;
+      background: linear-gradient(135deg,#ff9a9e,#fad0c4,#ffdde1);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+
+    /* Glass Card */
+    .card{
+      backdrop-filter: blur(15px);
+      background: rgba(255,255,255,0.25);
+      border-radius:30px;
+      padding:50px 35px;
+      text-align:center;
+      width:90%;
+      max-width:500px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.2);
+      position: relative;
+      z-index:2;
+    }
+
+    h1{color:#c9184a;font-size:38px;margin-bottom:15px;}
+    p{font-size:18px;color:#333;line-height:1.6;}
+    .tap{margin-top:20px;font-weight:600;color:#c9184a;}
+
+    /* Popup message */
+    .popup{
+      position:absolute;
+      font-size:22px;
+      font-weight:bold;
+      color:white;
+      text-shadow:0 5px 15px rgba(0,0,0,0.4);
+      animation: floatUp 1.2s ease forwards;
+      pointer-events:none;
+    }
+    @keyframes floatUp{
+      0%{opacity:0; transform:translateY(20px) scale(.5);} 
+      50%{opacity:1;}
+      100%{opacity:0; transform:translateY(-60px) scale(1.2);} 
+    }
+
+    /* Petals */
+    .petal{
+      position:absolute;
+      top:-50px;
+      font-size:24px;
+      animation: fall linear infinite;
+    }
+    @keyframes fall{
+      to{transform: translateY(110vh) rotate(360deg);}
+    }
+
+    /* Secret Button */
+    #secretBtn{
+      margin-top:25px;
+      padding:14px 26px;
+      border:none;
+      border-radius:30px;
+      background:#ff4d6d;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+      transition:.3s;
+    }
+    #secretBtn:hover{transform:scale(1.1);box-shadow:0 5px 20px rgba(255,77,109,.5);}
+
+    /* Proposal Popup */
+    #proposal{
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform: translate(-50%, -50%) scale(0);
+      opacity:0;
+      background:white;
+      padding:40px;
+      border-radius:25px;
+      text-align:center;
+      z-index:9999;
+      transition: .4s;
+      box-shadow:0 10px 40px rgba(0,0,0,.3);
+    }
+    #proposal h2{color:#c9184a;margin-bottom:20px;}
+    .btns button{
+      padding:10px 22px;
+      margin:10px;
+      font-size:18px;
+      border:none;
+      border-radius:25px;
+      cursor:pointer;
+    }
+    #yes{background:#06d6a0;color:white;}
+    #no{background:#ef476f;color:white;position:relative;}
+  </style>
+</head>
+<body>
+
+<!-- Music -->
+<audio id="music" loop>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Card -->
+<div class="card">
+  <h1>Happy Rose Day 🌹</h1>
+  <p>
+    From the moment you came into my life, everything turned softer,
+    brighter, and more beautiful. Just like a rose, our love grows stronger every day ❤️
+  </p>
+  <div class="tap">👉 Touch anywhere</div>
+  <button id="secretBtn">💌 Open Secret Letter</button>
+</div>
+
+<!-- Proposal Popup -->
+<div id="proposal">
+  <div id="proposalContent">
+    <h2>Will You Be Mine? 💞</h2>
+    <p>I never believed in magic until you walked into my life... ❤️</p>
+    <div class="btns">
+      <button id="yes">YES 😍</button>
+      <button id="no">NO 🙈</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Messages for love popup on card tap */
+const messages = ["I Love You ❤️","Only You 💘","Forever Us 💞","My Person 🥰","You & Me ✨","Endless Love 🌹"];
+document.body.addEventListener("click", (e)=>{
+  document.getElementById("music").play().catch(()=>{});
+  const msg = document.createElement("div");
+  msg.className="popup";
+  msg.innerText = messages[Math.floor(Math.random()*messages.length)];
+  msg.style.left = e.clientX + "px";
+  msg.style.top = e.clientY + "px";
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(),1200);
+});
+
+/* Petals */
+function createPetal(){
+  const petal = document.createElement("div");
+  petal.className="petal";
+  petal.innerText="🌹";
+  petal.style.left = Math.random()*100 + "vw";
+  petal.style.animationDuration = (5 + Math.random()*5) + "s";
+  petal.style.opacity = Math.random();
+  document.body.appendChild(petal);
+  setTimeout(()=>petal.remove(),10000);
+}
+setInterval(createPetal,300);
+
+/* Secret Proposal JS */
+window.onload = function(){
+  const proposal = document.getElementById("proposal");
+  const proposalContent = document.getElementById("proposalContent");
+  const secretBtn = document.getElementById("secretBtn");
+  const yesBtn = document.getElementById("yes");
+  const noBtn = document.getElementById("no");
+
+  let yesClicked = false;
+
+  // Secret button opens popup
+  secretBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    proposal.style.transform="translate(-50%,-50%) scale(1)";
+    proposal.style.opacity="1";
+  });
+
+  // NO click → spawn floating NO popup
+  noBtn.addEventListener("click", function(e){
+    if(yesClicked) return;
+    createNoPopup(e.clientX, e.clientY);
+  });
+
+  noBtn.addEventListener("mouseover", function(){
+    if(yesClicked) return;
+    moveNoButtonRandom(noBtn);
+  });
+
+  // YES click → show message + 3sec auto close
+  yesBtn.addEventListener("click", function(){
+    yesClicked = true;
+    noBtn.style.display = "none";
+    proposalContent.innerHTML = `
+      <h2>Yayyyy ❤️😍</h2>
+      <p>You just made me the happiest person alive 💖</p>
+    `;
+    setTimeout(()=>{
+      proposal.style.transform="translate(-50%,-50%) scale(0)";
+      proposal.style.opacity="0";
+    },3000);
+  });
+
+  // Helper → move NO randomly
+  function moveNoButtonRandom(button){
+    button.style.position="absolute";
+    button.style.top = Math.random()*250 + "px";
+    button.style.left = Math.random()*250 + "px";
+  }
+
+  // Helper → floating NO popup
+  function createNoPopup(x,y){
+    const noMsg = document.createElement("div");
+    noMsg.className = "popup";
+    noMsg.innerText = "NO 🙈";
+    noMsg.style.left = x + "px";
+    noMsg.style.top = y + "px";
+    document.body.appendChild(noMsg);
+    setTimeout(()=>noMsg.remove(),1200);
+  }
+
+};
+</script>
+
+</body>
+</html>
